@@ -7,7 +7,7 @@ const cookieParser = require('cookie-parser');
 
 const authRouter = require('./router/authRouter');
 const errorHandler = require('./middleware/errorHandler');
-const { CustomError } = require('./utils/AppError');
+const { NotFoundError } = require('./utils/AppError');
 
 require('dotenv').config({ path: `.env.${process.env.NODE_ENV}` });
 
@@ -35,7 +35,7 @@ app.use(express.json());
 app.use('/user', authRouter);
 
 app.use('/*', (req, res, next) => {
-  next(new CustomError(`can not find ${req.originalUrl}`, 404));
+  next(new NotFoundError(`can not find ${req.originalUrl}`, 404));
 });
 
 app.use(errorHandler);

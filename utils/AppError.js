@@ -25,30 +25,38 @@ class UnauthorizedError extends CustomError {
 }
 
 class ValidateError extends CustomError {
-  constructor(message, validatorErrors, originalError) {
+  constructor(message, validatorErrors) {
     super(message, 400);
-    this.message = message;
     this.errorType = 'ValidateError';
     this.validatorErrors = validatorErrors;
-    this.originalError = originalError;
   }
 }
 
 class BadRequestError extends CustomError {
-  constructor(message, originalError = null) {
-    super(message, 400, originalError);
-    this.message = message;
+  constructor(message) {
+    super(message, 400);
     this.errorType = 'BadRequestError';
-    this.originalError = originalError;
   }
 }
 
 class ForbiddenError extends CustomError {
-  constructor(message, originalError = null) {
-    super(message, 403, [], originalError);
-    this.message = message;
+  constructor(message) {
+    super(message, 403);
     this.errorType = 'ForbiddenError';
-    this.originalError = originalError;
+  }
+}
+
+class ConflictError extends CustomError {
+  constructor(message) {
+    super(message, 409);
+    this.errorType = 'ConflictError';
+  }
+}
+
+class NotFoundError extends CustomError {
+  constructor(message) {
+    super(message, 404);
+    this.errorType = 'NotFoundError';
   }
 }
 
@@ -59,4 +67,6 @@ module.exports = {
   UnauthorizedError,
   ForbiddenError,
   ValidateError,
+  ConflictError,
+  NotFoundError,
 };

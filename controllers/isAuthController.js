@@ -1,3 +1,5 @@
+const { ServerError } = require('../utils/AppError');
+
 const isAuthController = async (req, res) => {
   console.log('▶ ⇛ req:Header', req.headers);
   console.log('▶ ⇛ req:req.clientIp', req.headers.authorization);
@@ -19,7 +21,7 @@ const isAuthController = async (req, res) => {
       res.status(201).json({ status: 'fail', msg: 'User is not authorized' });
     }
   } catch (error) {
-    next(new CustomError('Server error during authorization', 500));
+    next(new ServerError('Server error during authorization'));
   }
 };
 
