@@ -1,42 +1,72 @@
-const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const UserService = require('../service/userService');
 const UserDto = require('../Dtos/userDto');
-const { ServerError, ConflictError } = require('../utils/AppError');
+const {
+  ServerError,
+  ConflictError,
+  BadRequestError,
+} = require('../utils/AppError');
+const UserService = require('../services/userService');
+const SessionsService = require('../services/sessionsService');
+const TokenService = require('../services/tokenServices');
 
 const regController = async (req, res, next) => {
   try {
     let { email, password } = req.body;
-    let { fingerprint } = req;
 
     email = email.trim().toLowerCase();
     password = password.trim();
 
-    const passwordHash = await bcrypt.hash(password, 10);
+    const user = await UserService.registrationUser(email, password); // return user | null
 
-    const [user, isCreated] = await UserService.findOrCreate(
-      email,
-      passwordHash,
-    );
-
-    if (!isCreated) {
+    if (!user) {
       next(new ConflictError('It is impossible to register such a user'));
-      // res
-      //   .status(201)
-      //   .json({ status: 'fail', msg: 'This email is already in use' });
-      // return;
     }
 
     // id, email, role
     const userData = UserDto.userJustRegDto(user);
+    // email, role
+    const userPayloadForToken = UserDto.userForTokenDto(user);
 
-    req.session.save(() => {
+    // create JWTs
+    const newTokens = await TokenService.newPairOfTokens(userPayloadForToken);
+    // const accessToken =
+    //   await TokenService.generateAccessToken(userPayloadForToken);
+    // const newRefreshToken =
+    //   await TokenService.generateRefreshToken(userPayloadForToken);
+    let { fingerprint } = req;
+    console.log('▶ ⇛ fingerprint:', fingerprint);
+    const user_ip = req.clientIp; // IP-адрес клиента
+    console.log('▶ ⇛ ip:', user_ip);
+
+    const dataForSession = SessionsService.makeDataObject(
+      user.id,
+      fingerprint,
+      newTokens.refresh_token,
+      user_ip,
+    );
+
+    const newSession = await SessionsService.addNewSession(dataForSession);
+
+    console.log('▶ ⇛ Controller newSession:', newSession);
+
+    if (newSession) {
+      // Creates Secure Cookie with refresh token
+      res.cookie('rf_tkn', newTokens.refresh_token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+        maxAge: 24 * 60 * 60 * 1000,
+      });
+
       res.status(200).json({
         status: 'success',
         msg: 'Successful registration',
         data: userData,
+        acs_token: newTokens.access_token,
       });
-    });
+    } else {
+      next(new BadRequestError('Error creating session'));
+    }
   } catch (error) {
     next(new ServerError(error));
   }

@@ -1,7 +1,8 @@
+const { raw } = require('express');
 const { Users } = require('../db/models');
 
-class UserService {
-  async findUserFromEmail(email) {
+class UserRepo {
+  static async findUserFromEmail(email) {
     try {
       const user = await Users.findOne({ where: { email }, raw: true });
       return user;
@@ -10,7 +11,7 @@ class UserService {
     }
   }
 
-  async findOrCreate(userEmail, hashPassword) {
+  static async findOrCreate(userEmail, hashPassword) {
     try {
       const [user, created] = await Users.findOrCreate({
         where: { email: userEmail },
@@ -18,11 +19,11 @@ class UserService {
           password: hashPassword,
         },
       });
-      return [user, created];
+      return [user.dataValues, created];
     } catch (e) {
       throw e;
     }
   }
 }
 
-module.exports = new UserService();
+module.exports = UserRepo;

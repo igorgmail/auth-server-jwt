@@ -17,16 +17,18 @@ module.exports = {
           model: 'Users',
           key: 'id',
         },
+        onDelete: 'CASCADE',
       },
       refresh_token: {
         type: Sequelize.TEXT,
-        unique: true,
         allowNull: false,
       },
       finger_print: {
         type: Sequelize.TEXT,
-        unique: true,
         allowNull: false,
+      },
+      user_ip: {
+        type: Sequelize.TEXT,
       },
       createdAt: {
         allowNull: false,

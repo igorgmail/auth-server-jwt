@@ -26,8 +26,8 @@ module.exports = class UserDto {
       throw new Error('Instance of UserDto is required');
     }
     const user = {
-      name: instance.name,
       email: instance.email,
+      role: instance.role,
     };
     return user;
   }

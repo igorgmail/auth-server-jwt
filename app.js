@@ -3,6 +3,7 @@ const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
 const fingerprint = require('express-fingerprint');
+const requestIp = require('request-ip');
 const cookieParser = require('cookie-parser');
 
 const authRouter = require('./router/authRouter');
@@ -25,6 +26,7 @@ app.use(
     parameters: [fingerprint.useragent, fingerprint.acceptHeaders],
   }),
 );
+app.use(requestIp.mw());
 //middleware for cookies
 app.use(cookieParser());
 // app.use(express.static(path.resolve('public')));

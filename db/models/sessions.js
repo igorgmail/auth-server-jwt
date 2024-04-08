@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
         model: 'Users',
         key: 'id',
       },
+      onDelete: 'CASCADE',
     },
     user_id: {
       allowNull: false,
@@ -26,13 +27,14 @@ module.exports = (sequelize, DataTypes) => {
     },
     refresh_token: {
       type: DataTypes.TEXT,
-      unique: true,
       allowNull: false,
     },
     finger_print: {
       type: DataTypes.TEXT,
-      unique: true,
       allowNull: false,
+    },
+    user_ip: {
+      type: DataTypes.TEXT,
     },
   };
   Sessions.init(attributes, {
