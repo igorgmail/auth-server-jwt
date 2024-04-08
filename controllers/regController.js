@@ -5,6 +5,7 @@ const {
   ConflictError,
   BadRequestError,
 } = require('../utils/AppError');
+
 const UserService = require('../services/userService');
 const SessionsService = require('../services/sessionsService');
 const TokenService = require('../services/tokenServices');
@@ -29,15 +30,9 @@ const regController = async (req, res, next) => {
 
     // create JWTs
     const newTokens = await TokenService.newPairOfTokens(userPayloadForToken);
-    // const accessToken =
-    //   await TokenService.generateAccessToken(userPayloadForToken);
-    // const newRefreshToken =
-    //   await TokenService.generateRefreshToken(userPayloadForToken);
-    let { fingerprint } = req;
-    console.log('▶ ⇛ fingerprint:', fingerprint);
-    const user_ip = req.clientIp; // IP-адрес клиента
-    console.log('▶ ⇛ ip:', user_ip);
 
+    let { fingerprint } = req;
+    const user_ip = req.clientIp; // IP-client
     const dataForSession = SessionsService.makeDataObject(
       user.id,
       fingerprint,

@@ -1,5 +1,3 @@
-const { raw } = require('express');
-const { Users } = require('../db/models');
 const UserRepo = require('../repositories/usersRepo');
 const bcrypt = require('bcrypt');
 

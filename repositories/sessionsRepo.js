@@ -9,7 +9,6 @@ class SessionsRepo {
         refresh_token: data.refresh_token,
         user_ip: data.user_ip,
       });
-      console.log('▶ ⇛ new_session:', new_session);
       return new_session ? new_session.dataValues : null;
     } catch (e) {
       throw e;
